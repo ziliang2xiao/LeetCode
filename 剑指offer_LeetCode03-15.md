@@ -35,22 +35,26 @@
     Output: true
     ```
 
-    > Code_Python
-
-    ```python
-    class Solution:
-        def containsDuplicate(self, nums):
-            """
-            :type nums: List[int]
-            :rtype: bool
-            """
-            return not(len(nums) == len(set(nums)))
-    ```
-
     > Code_Java
 
     ```java
-    class Solution {
+    class Solution1 {
+        public boolean containsDuplicate(int[] nums) {
+            public boolean containsDuplicate(int[] nums) {
+            Set<Integer> set = new HashSet<Integer>();
+
+            for(int i = 0; i < nums.length; i++) {
+                if (set.contains(nums[i])) {
+                    return true;
+                }
+                set.add(nums[i]);
+            }
+
+            return false;
+        }
+    }
+    
+    class Solution2 {
         public boolean containsDuplicate(int[] nums) {
             if (nums == null || nums.length == 0) {
                 return false;
@@ -93,38 +97,30 @@
     Output: false
     ```
 
-    > Code_Python
-
-    ```python
-    class Solution:
-        def containsNearbyDuplicate(self, nums, k):
-            """
-            :type nums: List[int]
-            :type k: int
-            :rtype: bool
-            """
-            dict = {}
-            for i,num in enumerate(nums):
-                if num in dict:
-                    if (i-dict[num])<=k:
-                        return True
-                dict[num]=i
-            return False
-    ```
-
     > Code_Java
-
+    
     ```java
-    class Solution {
+    class Solution1 {
         public boolean containsNearbyDuplicate(int[] nums, int k) {
-            Map<Integer, Integer> tempMap = new HashMap<>();
+            Set<Integer> set = new HashSet<Integer>();
+            for(int i = 0; i < nums.length; i++){
+                if(i > k) set.remove(nums[i-k-1]);
+                if(!set.add(nums[i])) return true;
+            }
+            return false;
+        }
+    }
+    ```
+    
+    ```java
+    class Solution2 {
+        public boolean containsNearbyDuplicate(int[] nums, int k) {
+            Map<Integer, Integer> map = new HashMap<Integer, Integer>();
             for (int i = 0; i < nums.length; i++) {
-                if (tempMap.containsKey(nums[i])) {
-                    if (i-tempMap.get(nums[i])<=k){
-                        return true;
-                    }
+                if (map.containsKey(nums[i])) {
+                    if (i - map.get(nums[i]) <= k) return true;
                 }
-                tempMap.put(nums[i], i);
+                map.put(nums[i], i);
             }
             return false;
         }
