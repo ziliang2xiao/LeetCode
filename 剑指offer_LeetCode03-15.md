@@ -40,7 +40,6 @@
     ```java
     class Solution1 {
         public boolean containsDuplicate(int[] nums) {
-            public boolean containsDuplicate(int[] nums) {
             Set<Integer> set = new HashSet<Integer>();
 
             for(int i = 0; i < nums.length; i++) {
@@ -102,6 +101,7 @@
     ```java
     class Solution1 {
         public boolean containsNearbyDuplicate(int[] nums, int k) {
+            // solve with set
             Set<Integer> set = new HashSet<Integer>();
             for(int i = 0; i < nums.length; i++){
                 if(i > k) set.remove(nums[i-k-1]);
@@ -115,6 +115,7 @@
     ```java
     class Solution2 {
         public boolean containsNearbyDuplicate(int[] nums, int k) {
+            // solve with map
             Map<Integer, Integer> map = new HashMap<Integer, Integer>();
             for (int i = 0; i < nums.length; i++) {
                 if (map.containsKey(nums[i])) {
@@ -156,27 +157,6 @@
     Output: false
     ```
 
-    > Code_Python
-
-    ```python
-    class Solution:
-        def containsNearbyAlmostDuplicate(self, nums, k, t):
-            """
-            :type nums: List[int]
-            :type k: int
-            :type t: int
-            :rtype: bool
-            """
-            if t == 0 and len(nums) == len(set(nums)):
-                return False
-            for i in range(len(nums)):
-                for j in range(i+1, i+k+1):
-                    if j >= len(nums): break
-                    if abs(nums[i] - nums[j]) <= t:
-                        return True
-            return False
-    ```
-
     > Code_Java
 
     ```java
@@ -186,18 +166,21 @@
                 return false;
             }
             TreeSet<Long> set = new TreeSet<>();
-            for(int i = 0; i < nums.length; i++){
-                long l = (long) nums[i];
-                //floor(E e) 方法返回在这个集合中小于或者等于给定元素的最大元素，如果不存在这样的元素,返回null.
-                Long floor = set.floor(l);
-                //ceiling(E e) 方法返回在这个集合中大于或者等于给定元素的最小元素，如果不存在这样的元素,返回null.
-                Long ceil = set.ceiling(l);
-                if((floor != null && l - floor <= t) ||(ceil != null && ceil - l <= t)){
+            for (int i = 0; i < nums.length; i++) {
+                Long floor = set.floor((long)nums[i] + t);
+                Long ceil = set.ceiling((long)nums[i] - t);
+
+                // if nums[i] < floor <= nums[i] + t
+                //.     or nums[i] - t  <= ceil < nums[i]
+                if ((floor != null && floor >= (long)nums[i])
+                    || (ceil != null && ceil <= (long)nums[i])) {
                     return true;
                 }
-                set.add(l);
-                if(i >= k)
-                    set.remove((long)nums[i -k]);
+
+                set.add((long)nums[i]);
+                if (i >= k) {
+                    set.remove((long)nums[i-k]);
+                }
             }
             return false;
         }
@@ -312,32 +295,6 @@
    Given target = `5`, return `true`.
 
    Given target = `20`, return `false`.
-
-   > Code_Python
-
-   ```java
-   class Solution:
-       def searchMatrix(self,matrix, target):
-           """
-           :type matrix: List[List[int]]
-           :type target: int
-           :rtype: bool
-           """
-   	    if not matrix:
-               return False
-           if not matrix[0]:
-               return False
-           rows, cols = len(matrix), len(matrix[0])
-           r, c = 0, cols - 1
-           while r < rows and c > -1:
-               if matrix[r][c] == target:
-                   return True
-               elif matrix[r][c] > target:
-                   c -= 1
-               else:
-                   r += 1
-           return False
-   ```
 
    > Code_Java
 
