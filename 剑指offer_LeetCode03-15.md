@@ -160,7 +160,8 @@
     > Code_Java
 
     ```java
-    class Solution {
+    class Solution1 {
+        // Binary Search Tree: As a result maintaining the tree of size k will result in time complexity O(N lg K). In order to check if there exists any value of range abs(nums[i] - nums[j]) to simple queries can be executed both of time complexity O(lg K)
         public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
             if(nums == null || nums.length < 2 || k < 1 || t<0 ) {
                 return false;
@@ -182,6 +183,34 @@
                     set.remove((long)nums[i-k]);
                 }
             }
+            return false;
+        }
+    } 
+    
+    class Solution2 {
+        // Using buckets. Both time complexity O(N), and space complexity is O(k)
+        public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+            if (k < 1 || t < 0) return false;
+            Map<Long, Long> window = new HashMap<>();
+            for (int i = 0; i < nums.length; i++) {
+                long remappedNum = (long)nums[i] - Integer.MIN_VALUE;
+                // remap the nums[i] to a bucket
+                long bucket = remappedNum / ((long)t + 1);
+                // there cannot exists any in the same bucket, or in the adjecent buckets and the difference <t
+                if (window.containsKey(bucket)     
+                    || (window.containsKey(bucket - 1) && remappedNum - window.get(bucket - 1) <= t)
+                    || (window.containsKey(bucket + 1) && window.get(bucket + 1) - remappedNum <= t)) {
+                    return true;
+                }
+                // delete the bucket to maintain the window as k
+                if (window.entrySet().size() >= k) {
+                    long lastBucket = ((long)nums[i - k] - Integer.MIN_VALUE) / ((long)t + 1);
+                    window.remove(lastBucket);
+                }
+                // add the new num into the window
+                window.put(bucket, remappedNum);
+            }
+
             return false;
         }
     } 
@@ -222,27 +251,6 @@
    ]
    target = 13
    Output: false
-   ```
-
-   > Code_python
-
-   ```python
-   class Solution:
-       def searchMatrix(self, matrix, target):
-           """
-           :type matrix: List[List[int]]
-           :type target: int
-           :rtype: bool
-           """
-           if len(matrix)==0:
-               return False
-           i = 0
-           j = len(matrix[0])-1
-           while i<len(matrix) and j >= 0:
-               if matrix[i][j] == target:return True
-               elif matrix[i][j] > target:j-=1
-               else: i+=1
-           return False
    ```
 
    > Code_Java
@@ -332,15 +340,6 @@
 
    请实现一个函数，把字符串中的每个空格替换成“%20”.例如，输入“we are happy.”，则输出“we%20are%20happy”
 
-   > Code_Python
-
-   ```python
-   class Solution:
-       def replaceSpace(self, str):
-           # write code here
-           return str.replace(" ","%20")
-   ```
-
    > Java_Code
 
    ```java
@@ -389,24 +388,11 @@
 
 > 面试题6 从尾到头打印链表
 
-1. **LeetCode 无
+1. **LeetCode [Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/)  (206)
 
    > Description
 
    题目：输入一个链表的头结点，从尾到头反过来打印出每个结点的值。 
-
-   > Code_Python
-
-   ```python
-   class Solution:
-       # 返回从尾部到头部的列表值序列，例如[1,2,3]
-       def printListFromTailToHead(self, listNode):
-           newlist =[]
-           while listNode is not None:
-               newlist.append(listNode.val)
-               listNode = listNode.next
-           return newlist[::-1]
-   ```
 
    > Code_Java
 
@@ -424,8 +410,34 @@
        return arrayList;
        } 
    }
-   ```
+   
+   // LEETCODE
+   public ListNode reverseList(ListNode head) {
+        /* iterative solution */
+        ListNode newHead = null;
+        while (head != null) {
+            ListNode next = head.next;
+            head.next = newHead;
+            newHead = head;
+            head = next;
+        }
+        return newHead;
+    }
 
+    public ListNode reverseList(ListNode head) {
+        /* recursive solution */
+        return reverseListInt(head, null);
+    }
+
+    private ListNode reverseListInt(ListNode head, ListNode newHead) {
+        if (head == null)
+            return newHead;
+        ListNode next = head.next;
+        head.next = newHead;
+        return reverseListInt(next, head);
+    }
+   ```
+   
    
 
 ###### 2.3.4 树
@@ -538,32 +550,6 @@
       15   7
    ```
 
-   > Code_Python
-
-   ```python
-   # Definition for a binary tree node.
-   # class TreeNode:
-   #     def __init__(self, x):
-   #         self.val = x
-   #         self.left = None
-   #         self.right = None
-   
-   class Solution:
-       def buildTree(self, inorder, postorder):
-           """
-           :type inorder: List[int]
-           :type postorder: List[int]
-           :rtype: TreeNode
-           """
-           if not postorder or not inorder:return None
-           root_index = postorder.pop()
-           root = TreeNode(root_index)
-           pivot = inorder.index(root_index)
-           root.right=self.buildTree(inorder[pivot+1:],postorder[pivot:])
-           root.left=self.buildTree(inorder[:pivot],postorder[:pivot])
-           return root
-   ```
-
    > Code_Java
 
    ```java
@@ -578,27 +564,26 @@
     */
    class Solution {
        public TreeNode buildTree(int[] inorder, int[] postorder) {
-           int start = 0;
-           int end = postorder.length-1;
-           return buildTreeStep(start,end,start,end,inorder,postorder);
+           if (inorder == null || postorder == null || inorder.length != postorder.length) return null;
+           HashMap<Integer, Integer> map = new HashMap<>();
+           for (int i = 0; i < inorder.length; i++) {
+               map.put(inorder[i], i);
+           }
+           return helper(inorder, 0, inorder.length - 1, postorder, 0, postorder.length - 1, map);
        }
-       //递归实现
-       public TreeNode buildTreeStep(int inStart ,int inEnd ,int posStart,int posEnd,int[] inorder,int[] postorder){
-           if (inEnd<inStart || posEnd<posStart) {
+
+       private TreeNode helper(int[] inorder, int inStart, int inEnd, int[] postorder, int postStart, int postEnd, HashMap<Integer, Integer> map) {
+           if (postStart > postEnd || inStart > inEnd) {
                return null;
            }
-           TreeNode treeNode = new TreeNode(postorder[posEnd]);
-           int pivot  = getCurIndexInInOrder(inorder,inStart,inEnd,postorder[posEnd]);
-           treeNode.right = buildTreeStep(inStart+pivot+1,inEnd,posStart+pivot,posEnd-1,inorder,postorder);
-           treeNode.left = buildTreeStep(inStart,inStart+pivot-1,posStart,posStart+pivot-1,inorder,postorder);
-           return treeNode;
-       }
-       //get pivot index
-       public int getCurIndexInInOrder(int[] inorder, int start, int end, int key){
-           for(int i=start; i<=end; i++){
-               if(inorder[i] == key) return i-start;
-           }
-           return -1;
+           // take the last one in the post order as the new root
+           TreeNode root = new TreeNode(postorder[postEnd]);
+           int rootIdx = map.get(root.val);
+           int leftPostEnd = postStart + rootIdx - inStart - 1; // keep num of left-part nodes
+           root.left = helper(inorder, inStart, rootIdx - 1, postorder, postStart, leftPostEnd, map);
+           int rightPostStart = postStart + rootIdx - inStart;
+           root.right = helper(inorder, rootIdx + 1, inEnd, postorder, rightPostStart, postEnd - 1, map);
+           return root;
        }
    }
    ```
@@ -611,60 +596,38 @@
 
    给定一个二叉树和其中的一个结点，请找出中序遍历顺序的下一个结点并且返回。注意，树中的结点不仅包含左右子结点，同时包含指向父结点的指针。 
 
-   > Code_Python
-
-   ```python
-   class TreeLinkNode:
-       def __init__(self, x):
-           self.val = x
-           self.left = None
-           self.right = None
-           self.next = None
-   
-   class Solution1:
-       def GetNext(self,pNode):
-           if not pNode:
-               return None
-           if pNode.right:
-               pNode = pNode.right
-               while pNode.left is not None:
-                   pNode = pNode.left
-               return pNode
-           
-           while pNode.next is not None:
-               if pNode.next.left is pNode:
-                   return pNode.next
-               pNode == pNode.next
-           return None
-   ```
-
    > Code_Java
 
    ```java
    public class Solution {
        /**
-        * 如果有右子树，则找右子树的最左节点
-        * 没右子树，则找第一个当前节点是父节点左孩子的节点
+        * 1）一个节点有右子树，那么该节点的下一个节点就是右子树的最左子节点
+        * 2）一个节点没有右子树，如果该节点是其父节点的左子节点，那么它的下一个节点就是它的父节点；
+        *    否则它的下一个节点就是它的祖先节点中某个节点, 且该祖先节点是其父节点的左子节点
        */
-       TreeLinkNode GetNext(TreeLinkNode node)
-       {
-           if(node==null) return null;
-           if(node.right!=null){    
-               node = node.right;
-               while(node.left!=null) {
-                   node = node.left;
+       private static TreeNode findNextNode(TreeNode treeNode) {
+          if(treeNode == null){
+              return null;
+          }
+          if(treeNode.right != null){
+               TreeNode rightNode = treeNode.right;
+               while(rightNode.left != null){
+                   rightNode = rightNode.left;
+              }
+              return rightNode;
+          }else if(treeNode.parent != null){
+               TreeNode currentNode = treeNode;
+               TreeNode parentNode = treeNode.parent;
+               while(parentNode != null && currentNode == parentNode.right){
+                   currentNode = parentNode;
+                   parentNode = parentNode.parent;
                }
-               return node;
-           }
-           while(node.next!=null){ 
-               if(node.next.left==node) {
-                   return node.next;
-               }
-               node = node.next;
-           }
-           return null;   //退到了根节点仍没找到，则返回null
-       }
+               return parentNode;
+          }
+          return null;
    }
+   
+   // ref: https://blog.csdn.net/weixin_41762621/article/details/82932682 
    ```
 
 ###### 2.3.5 栈和队列
@@ -699,63 +662,7 @@
    - You must use *only* standard operations of a stack -- which means only `push to top`, `peek/pop from top`, `size`, and `is empty`operations are valid.
    - Depending on your language, stack may not be supported natively. You may simulate a stack by using a list or deque (double-ended queue), as long as you use only standard operations of a stack.
    - You may assume that all operations are valid (for example, no pop or peek operations will be called on an empty queue).
-
-   > Code_Python
-
-   ```python
-   class MyQueue:
    
-       def __init__(self):
-           """
-           Initialize your data structure here.
-           """
-           self.in_stack = []
-           self.out_stack = []
-   
-       def push(self, x):
-           """
-           Push element x to the back of queue.
-           :type x: int
-           :rtype: void
-           """
-           self.in_stack.append(x)
-   
-       def pop(self):
-           """
-           Removes the element from in front of queue and returns that element.
-           :rtype: int
-           """
-           x = self.peek()
-           self.out_stack.pop()   
-           return x
-   
-       def peek(self):
-           """
-           Get the front element.
-           :rtype: int
-           """
-           if not self.out_stack:
-               while self.in_stack:
-                   self.out_stack.append(self.in_stack.pop())
-           return self.out_stack[-1]
-   
-       def empty(self):
-           """
-           Returns whether the queue is empty.
-           :rtype: bool
-           """
-           return (not self.in_stack and not self.out_stack)
-           
-   
-   
-   # Your MyQueue object will be instantiated and called as such:
-   # obj = MyQueue()
-   # obj.push(x)
-   # param_2 = obj.pop()
-   # param_3 = obj.peek()
-   # param_4 = obj.empty()
-   ```
-
    > Code_Java
 
    ```java
@@ -839,74 +746,6 @@
    - You must use *only* standard operations of a queue -- which means only `push to back`, `peek/pop from front`, `size`, and `is empty` operations are valid.
    - Depending on your language, queue may not be supported natively. You may simulate a queue by using a list or deque (double-ended queue), as long as you use only standard operations of a queue.
    - You may assume that all operations are valid (for example, no pop or top operations will be called on an empty stack).
-
-   > Code_Python
-
-   ```python
-   class MyStack:
-   
-       def __init__(self):
-           """
-           Initialize your data structure here.
-           """
-           self.queue_1 = []
-           self.queue_2 = []
-       def push(self, x):
-           """
-           Push element x onto stack.
-           :type x: int
-           :rtype: void
-           """
-           if self.queue_1:
-               self.queue_1.append(x)
-           else:
-               self.queue_2.append(x)
-   
-       def pop(self):
-           """
-           Removes the element on top of the stack and returns that element.
-           :rtype: int
-           """
-           if self.queue_1:
-               for q in range(0,len(self.queue_1)-1):
-                   self.queue_2.append(self.queue_1.pop(0))
-               return self.queue_1.pop(0)
-           else:
-               for q in range(0,len(self.queue_2)-1):
-                   self.queue_1.append(self.queue_2.pop(0))
-               return self.queue_2.pop(0)
-   
-       def top(self):
-           """
-           Get the top element.
-           :rtype: int
-           """
-           if self.queue_1:
-               for q in range(0,len(self.queue_1)-1):
-                   self.queue_2.append(self.queue_1.pop(0))
-               temp = self.queue_1.pop(0)
-               self.queue_2.append(temp)
-               return temp
-           else:
-               for q in range(0,len(self.queue_2)-1):
-                   self.queue_1.append(self.queue_2.pop(0))
-               temp = self.queue_2.pop(0)
-               self.queue_1.append(temp)
-               return temp
-       def empty(self):
-           """
-           Returns whether the stack is empty.
-           :rtype: bool
-           """
-           return (not self.queue_1 and not self.queue_2)
-   
-   # Your MyStack object will be instantiated and called as such:
-   # obj = MyStack()
-   # obj.push(x)
-   # param_2 = obj.pop()
-   # param_3 = obj.top()
-   # param_4 = obj.empty()
-   ```
 
    > Code_Java
 
@@ -1097,28 +936,6 @@
    Output: 0
    ```
 
-   > Code_Python
-
-   ```python
-   def findMin(nums):
-       """
-       :type nums: List[int]
-       :rtype: int
-       """
-       if not nums:
-           return nums
-       start = 0
-       end = len(nums) - 1
-       while start <= end:
-           mid = int((start + end) / 2)
-           if nums[start] <= nums[end]:
-               return nums[start]
-           elif nums[start] > nums[mid]:
-               end = mid
-           else:
-               start = mid + 1
-   ```
-
    > Code_Java
 
    ```java
@@ -1174,35 +991,6 @@
 
    - This is a follow up problem to [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/description/).
    - Would allow duplicates affect the run-time complexity? How and why?
-
-   > Code_Python
-
-   ```python
-   class Solution:
-       def findMin(self, nums):
-           """
-           :type nums: List[int]
-           :rtype: int
-           """
-           if not nums:
-               return nums
-           start = 0
-           end = len(nums) - 1
-           while start <= end:
-               mid = int((start + end) / 2)
-               # 判断[3,1,3]情况
-               if(nums[start]==nums[end]):
-                   for i in range(start,end):
-                       if nums[i]<nums[start]:
-                           return nums[i]
-                   return nums[start]
-               if (nums[start] <nums[end]) :
-                   return nums[start]
-               elif nums[start] > nums[mid]:
-                   end = mid
-               else:
-                   start = mid+1
-   ```
 
    > Code_Java
 
@@ -1273,34 +1061,6 @@
    Output: 28
    ```
 
-   > Code_Python
-
-   ```python
-   class Solution:
-       def uniquePaths(self, m, n):
-           """
-           :type m: int
-           :type n: int
-           :rtype: int
-           """
-           map_all = []
-           # 第一步先给边界点赋值为1
-           for col in range(m):
-               row_map = []
-               for row in range(n):
-                   if row == 0 or col == 0:
-                       temp = 1
-                   else:
-                       temp = 0
-                   row_map.append(temp)
-               map_all.append(row_map)
-           # 计算夹角值，等于左边和上边值得和
-           for i in range(1,m):
-               for j in range(1,n):
-                   map_all[i][j] = map_all[i][j - 1] + map_all[i - 1][j]
-           return map_all[m-1][n-1]
-   ```
-
    > Code_Java
 
    ```java
@@ -1356,34 +1116,6 @@
    2. Down -> Down -> Right -> Right
    ```
 
-   > Code_Python
-
-   ```python
-   class Solution:
-       def uniquePathsWithObstacles(self, obstacleGrid):
-           """
-           :type obstacleGrid: List[List[int]]
-           :rtype: int
-           """
-           m = len(obstacleGrid)
-           n = len(obstacleGrid[0])
-           dp = [[0]*n]*m
-           for i in range(m):
-               for j in range(n):
-                   if obstacleGrid[i][j] == 0:
-                       if i==0 and j==0:
-                           dp[i][j] = 1
-                       elif i==0:
-                           dp[i][j] = dp[i][j-1]
-                       elif j==0:
-                           dp[i][j] = dp[i-1][j]
-                       else:
-                           dp[i][j] = dp[i-1][j]+dp[i][j-1]
-                   else:
-                       dp[i][j] = 0
-           return dp[m-1][n-1]
-   ```
-
    > Code_Java
 
    ```java
@@ -1425,33 +1157,7 @@
 
    地上有一个m行和n列的方格。一个机器人从坐标0,0的格子开始移动，每一次只能向左，右，上，下四个方向移动一格，但是不能进入行坐标和列坐标的数位之和大于k的格子。 例如，当k为18时，机器人能够进入方格（35,37），因为3+5+3+7 = 18。但是，它不能进入方格（35,38），因为3+5+3+8 = 19。请问该机器人能够达到多少个格子？
 
-   > Code_Python
-
-   ```python
-   class Solution:
-       #计算数字之和
-       def getDigitalSum(self, value):
-           sum=0
-           while value>=1:
-               sum+=value%10
-               value=int(value/10)
-           return sum
    
-       def movingCountCore(self, threshold, rows, cols, row, col, visited):
-           count = 0
-           # 判断是否满足要求，即在边界范围内且未到达过并且数字之和合理
-           if row >= 0 and row < rows and col >= 0 and col < cols and visited[row*cols+col] and (self.getDigitalSum(col) + self.getDigitalSum(row) <= threshold):
-               visited[row * cols + col] = 0
-               count=1+self.movingCountCore(threshold,rows,cols,row-1,col,visited)+self.movingCountCore(threshold,rows,cols,row,col-1,visited)+self.movingCountCore(threshold,rows,cols,row+1,col,visited)+self.movingCountCore(threshold,rows,cols,row,col+1,visited)
-           return count
-   
-       def movingCount(self, threshold, rows, cols):
-           if threshold <0 or rows<0 or cols<0:return 0
-           # 0 false 1 true
-           visited = [1]*(rows*cols)
-           return self.movingCountCore(threshold,rows,cols,0,0,visited)
-   ```
-
    > Code_Java
 
    ```java
@@ -1507,29 +1213,6 @@
    每段绳子的长度为k[0],k[1],k[2],...,k[m]。请问k[0]*k[1]*k[2]*...*k[m]的最大值。
 
    例如绳子是长度为8，我们把它剪成的长度分别为2,3,3的三段，此时得到的最大的乘积是18。
-
-   > Code_Python
-
-   ```python
-   class Solution:
-       def maxProduct(self, length):
-           if length < 2:
-               return 0
-           if length < 4:
-               return length
-           # 构造一个n+1的列表因为0不用所以为n+1,暂存使用
-           products = [0] * (length+1)
-           products[0], products[1], products[2], products[3] = 0, 1, 2, 3
-           for i in range(4, length+1):
-               max = 0
-               for j in range(1, int(i / 2)+1):
-                   # 在剪第一刀的时候，又n-2中可能的选择，也就是剪出来的绳子的可能长度分别为1，2，...n，因此f(n)=max(f(i)*f(n-i))
-                   product = products[j] * products[i - j]
-                   if max < product:
-                       max = product
-                   products[i] = max
-           return products[-1]
-   ```
 
    > Code_Java
 
@@ -1592,22 +1275,6 @@
    Explanation: Integer 128 has binary representation 00000000000000000000000010000000
    ```
 
-   > Code_Python
-
-   ```python
-   class Solution(object):
-       def hammingWeight(self, n):
-           """
-           :type n: int
-           :rtype: int
-           """
-           count = 0
-           while n:
-               count+=1
-               n=n&(n-1)
-           return count
-   ```
-
    > Code_Java
 
    ```java
@@ -1660,27 +1327,6 @@
 
    - -100.0 < *x* < 100.0
    - *n* is a 32-bit signed integer, within the range [−231, 231 − 1]
-
-   > Code_Python
-
-   ```python
-   class Solution(object):
-       def myPow(self, x, n):
-           """
-           :type x: float
-           :type n: int
-           :rtype: float
-           """
-           if n<0:x,n=1/x,-n
-           res = 1
-           while n>0:
-               if n%2!=0:
-                   res *=x
-               x*=x
-               n=n//2
-           return res
-           
-   ```
 
    > Code_Java
 
