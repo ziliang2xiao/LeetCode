@@ -861,30 +861,6 @@
    3. 2 steps + 1 step
    ```
 
-   > Code_Python
-
-   ```python
-   class Solution:
-       '''
-       递归实现，时间复杂度过高，使用循环实现，循环实现思路，
-       通过f(0)+f(1)=f(2)计算f(3)=f(2)+f(1) ...
-       '''
-       def climbStairs(self, n):
-           """
-           :type n: int
-           :rtype: int
-           """
-           if n < 2: return n
-           fibNMinusOne = 1
-           fibNMinusTwo = 0
-           fibN = 0
-           for _ in range(n):
-               fibN = fibNMinusOne + fibNMinusTwo
-               fibNMinusTwo = fibNMinusOne
-               fibNMinusOne = fibN
-           return fibN
-   ```
-
    > Code_Java
 
    ```java
@@ -896,8 +872,8 @@
            int fibNMinusOne = 1;
            int fibNMinusTwo = 0;
            int fibN = 0;
-           for (int i=1;i<=n;++i){
-               fibN = fibNMinusOne+fibNMinusTwo;
+           for (int i=1; i<=n; ++i){
+               fibN = fibNMinusOne + fibNMinusTwo;
                fibNMinusTwo = fibNMinusOne;
                fibNMinusOne=fibN;
            }
@@ -945,7 +921,7 @@
            int end = nums.length - 1;
            int mid = 0;
            while (start <= end) {
-               mid = (start+end)/2;
+               mid = (start + end)/2;
                if (nums[start] <= nums[end]) {
                    return nums[start];
                } else if (nums[start] > nums[mid]) {
@@ -997,28 +973,32 @@
    ```java
    class Solution {
        public int findMin(int[] nums) {
-           int start = 0;
-           int end = nums.length - 1;
-           int mid = 0;
-           while (start <= end) {
-               mid = (start + end) / 2;
-               if (nums[start]==nums[end]){
-                   for (int i = start ;i<end;++i){
-                       if (nums[i]<nums[start]){
-                           return nums[i];
-                       }
-                   }
+           if (nums == null || nums.length == 0) return -1;
+
+           int start = 0, end = nums.length - 1;
+           int mid;
+           while (start + 1 < end) {
+               mid = start + (end - start) / 2;
+               // no rotation
+               if (nums[start] < nums[end]) { 
                    return nums[start];
                }
-               if (nums[start] < nums[end]) {
-                   return nums[start];
-               } else if (nums[start] > nums[mid]) {
+               // have to find one by one
+               if (nums[start] == nums[end] && nums[mid] == nums[start]) {
+                   int min = nums[start];
+                   for (int i = start; i <= end; i++) {
+                       min = Math.min(min, nums[i]);
+                   }
+                   return min;
+               }
+               // general cases
+               if (nums[mid] <= nums[end]) {
                    end = mid;
                } else {
-                   start = mid + 1;
+                   start = mid;
                }
            }
-           return -1;
+           return Math.min(nums[start], nums[end]);
        }
    }
    ```
@@ -1287,6 +1267,26 @@
                n=n&(n-1);
            }
            return total;
+       }
+   }
+   
+   public class Solution2 {
+       // you need to treat n as an unsigned value
+       public int hammingWeight(int n) {
+           long flag = 1;
+           int count = 0;
+           
+           while(flag != 0) {
+               // cannot be > 0 instead, beacuse 0x80000000 is a negative number
+               if ((n & flag) != 0) {
+                   count++;
+               }
+               // System.out.println(Integer.toBinaryString(2 << 33)) is equivalent to shift by 1
+               // must define it as long here, or it will convert -1 (0xffffffff) to a -1 in long
+               flag = (flag << 1) & 0xffffffffL;
+           }
+
+           return count;
        }
    }
    ```
