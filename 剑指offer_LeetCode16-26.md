@@ -41,45 +41,29 @@
     - -100.0 < *x* < 100.0
     - *n* is a 32-bit signed integer, within the range [−231, 231 − 1]
 
-    > Code_Python
-
-    ```python
-    class Solution(object):
-        def myPow(self, x, n):
-            """
-            :type x: float
-            :type n: int
-            :rtype: float
-            """
-            if n<0:x,n=1/x,-n
-            res = 1
-            while n>0:
-                if n%2!=0:
-                    res *=x
-                x*=x
-                n=n//2
-            return res
-    ```
-
     > Code_Java
 
     ```java
     class Solution {
         public double myPow(double x, int n) {
-            long N = n;
-            if (N<0){
-                x=1/x;
-                N = -N;
-            }
-            double result = 1;
-            while (N > 0) {
-                if (N % 2 == 1) {
-                    result = result*x;
+            if (x == 0.0) return 0;
+            if (n < 0) {
+                x = 1 / x;
+                if (n == Integer.MIN_VALUE) {
+                    return x * myPow(x, Integer.MAX_VALUE);
                 }
-                N = N/2;
-                x=x*x;
+                n = -n;
             }
-            return result;
+            double res = 1;
+            while (n >= 1) {
+                if ((n & 0x1) == 1) {
+                    res *= x;
+                }
+                x *= x;
+                n = n >> 1;
+            }
+
+            return res;
         }
     }
     ```
@@ -117,43 +101,24 @@
    The 11th digit of the sequence 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ... is a 0, which is part of the number 10.
    ```
 
-   > Code_Python
-
-   ```python
-   class Solution(object):
-       def findNthDigit(self, n):
-           """
-           :type n: int
-           :rtype: int
-           """
-           base, digit, temp = 9, 1, 1
-           while n > base * digit:
-               n -= base * digit
-               digit += 1
-               temp += base
-               base *= 10
-           return int(str(temp + (n - 1) // digit)[(n - 1) % digit])
-   
-   
-   ```
-
    > Code_Java
 
    ```java
-   class Solution {
-       public int findNthDigit(int n) {
-           //当n为2147483647即base*time 会大于int最大空间2^23-1，所以使用long大小为2^63-1类型
-           long base = 9;
-           int temp = 1;
-           int time = 1;
-           while (n > base * time) {
-               n -= base * time;
-               temp += base;
-               time += 1;
-               base *= 10;
-           }
-           return ((temp + (n - 1) / time) + "").charAt((n - 1) % time) - '0';
+   public int findNthDigit(int n) {
+       int len = 1;
+       long count = 9;
+       int start = 1;
+
+       while (n > len * count) {
+           n -= len * count;
+           len += 1;
+           count *= 10;
+           start *= 10;
        }
+
+       start += (n - 1) / len;
+       String s = Integer.toString(start);
+       return s.charAt((n - 1) % len) - '0';
    }
    ```
 
@@ -196,25 +161,6 @@
    - The given node will not be the tail and it will always be a valid node of the linked list.
    - Do not return anything from your function.
 
-   > Code_Python
-
-   ```python
-   # Definition for singly-linked list.
-   # class ListNode:
-   #     def __init__(self, x):
-   #         self.val = x
-   #         self.next = None
-   
-   class Solution:
-       def deleteNode(self, node):
-           """
-           :type node: ListNode
-           :rtype: void Do not return anything, modify node in-place instead.
-           """
-           if node.next:
-               node.val,node.next = node.next.val,node.next.next
-   ```
-
    > Code_Java
 
    ```java
@@ -228,7 +174,7 @@
     */
    class Solution {
        public void deleteNode(ListNode node) {
-           if(node.next!=null){
+           if(node.next != null){
                node.val = node.next.val;
                node.next = node.next.next;
            }
@@ -423,29 +369,7 @@
 
    输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前半部分，所有的偶数位于位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
 
-   > Code_Python
-
-   ```python
-   class Solution:
-       def reOrderArray(self, array):
-           # write code here
-           if not len(array): return []
-           index_s = 0
-           index_e = len(array) - 1
-           result = [0] * (index_e + 1)
-           list_odd = []
-           for num in array[::-1]:
-               if num % 2 == 0:
-                   result[index_e] = num
-                   index_e -= 1
-               else:
-                   list_odd.append(num)
-                   index_s += 1
-           for i in range(index_s):
-               result[i]=list_odd.pop()
-           return result
-   ```
-
+ 
    > Code_Java
 
    ```java
@@ -477,30 +401,6 @@
    > Description
 
    输入一个链表，输出该链表中倒数第k个结点。 
-
-   > Code_Python
-
-   ```python
-   # -*- coding:utf-8 -*-
-   # class ListNode:
-   #     def __init__(self, x):
-   #         self.val = x
-   #         self.next = None
-   class Solution:
-       def FindKthToTail(self, head, k):
-           if head<1 or head==None:return None
-           else:
-               p=head
-               k_listNode = head
-               while p:
-                   count+=1
-                   if count>k:
-                       k_listNode=k_listNode.next
-                   p=p.next
-               if count<k:
-                   return None
-             return k_listNode
-   ```
 
    > Code_Java
 
