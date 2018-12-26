@@ -363,7 +363,7 @@
 
 > 面试题21：调整数组顺序使奇数位于偶数前面
 
-1. LeetCode**无
+1. [Sort array by parity](https://leetcode.com/problems/sort-array-by-parity/) (905) (II 922)
 
    > Description
 
@@ -436,35 +436,7 @@
    Follow up:
    Can you solve it without using extra space?
 
-   > Code_Python
-
-   ```python
-   # Definition for singly-linked list.
-   # class ListNode(object):
-   #     def __init__(self, x):
-   #         self.val = x
-   #         self.next = None
-   
-   class Solution(object):
-       def hasCycle(self, head):
-           """
-           :type head: ListNode
-           :rtype: bool
-           """
-           if not head or head.next==None:
-               return False
-           pre = head
-           suf = head
-           while pre.next!=None:
-               if pre.next.next == None:
-                   return False
-               pre = pre.next.next
-               suf = suf.next
-               if pre == suf:
-                   return True
-           return False
-   ```
-
+  
    > Code_Java
 
    ```java
@@ -504,38 +476,6 @@
 
    **Note:** Do not modify the linked list.
 
-   > Code_Python
-
-   ```python
-   # Definition for singly-linked list.
-   # class ListNode(object):
-   #     def __init__(self, x):
-   #         self.val = x
-   #         self.next = None
-   
-   class Solution(object):
-       def detectCycle(self, head):
-           """
-           :type head: ListNode
-           :rtype: ListNode
-           """
-           if not head:return None
-           first_node,second_node = head,head
-           while first_node and second_node and first_node.next:
-               first_node = first_node.next.next
-               second_node = second_node.next
-               if first_node == second_node:
-                   result_node = head
-                   while result_node != second_node:
-                           second_node = second_node.next
-                           result_node = result_node.next
-                   return result_node    
-           return None
-               
-               
-           
-   ```
-
    > Code_Java
 
    ```java
@@ -551,27 +491,27 @@
     * }
     */
    public class Solution {
-       //
        public ListNode detectCycle(ListNode head) {
-           if(head == null){
+           if (head == null || head.next == null) {
                return null;
            }
-           //前两个节点目的是判断是否有环
-           ListNode first = head;
-           ListNode second = head;
-           //当有环的时候，第一个节点和result_node节点同时往后走，相遇的时候即为环节点
-           ListNode result_node = head;
-           while (first!=null && second!=null && first.next!=null){
-               first = first.next.next;
-               second = second.next;
-               if(first==second){
-                   while(first != result_node){
-                       first = first.next;
-                       result_node = result_node.next;
+
+           ListNode fast = head, slow = head;
+           //当有环的时候，slow和start节点同时往后走，相遇的时候即为环入口
+           // 证明见 https://leetcode.com/problems/linked-list-cycle-ii/discuss/44793/O(n)-solution-by-using-two-pointers-without-change-anything 
+           while (fast != null && fast.next != null) {
+               fast = fast.next.next;
+               slow = slow.next;
+               if (fast == slow) {
+                   ListNode start = head;
+                   while (slow != start) {
+                       slow = slow.next;
+                       start = start.next;
                    }
-                   return result_node;
+                   return start;
                }
            }
+
            return null;
        }
    }
