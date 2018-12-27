@@ -532,38 +532,6 @@
    Output: 5->4->3->2->1->NULL
    ```
 
-   > Code_Python
-
-   ```python
-   # Definition for singly-linked list.
-   # class ListNode:
-   #     def __init__(self, x):
-   #         self.val = x
-   #         self.next = None
-   
-   class Solution:
-       def reverseList(self, head):
-           """
-           :type head: ListNode
-           :rtype: ListNode
-           """
-           # 如果节点为空
-           if not head:return None
-           p_node = head
-           p_reversed_head = None
-           p_prev = None
-           while p_node:
-               p_next = p_node.next
-               # 节点不为空则开始替换当前节点
-               if p_node:
-                   p_reversed_head = p_node
-               p_node.next = p_prev
-               p_prev = p_node
-               p_node = p_next
-               
-           return p_reversed_head
-   ```
-
    > Code_Java
 
    ```java
@@ -600,45 +568,6 @@
    ```
    Input: 1->2->4, 1->3->4
    Output: 1->1->2->3->4->4 
-   ```
-
-   > Code_Python
-
-   ```python
-   # Definition for singly-linked list.
-   # class ListNode:
-   #     def __init__(self, x):
-   #         self.val = x
-   #         self.next = None
-   
-   class Solution:
-       def mergeTwoLists(self, l1, l2):
-           """
-           :type l1: ListNode
-           :type l2: ListNode
-           :rtype: ListNode
-           """
-           if not l1:return l2
-           if not l2:return l1
-           if l1.val>l2.val:
-               head =l2
-               l2 = l2.next
-           else:
-               head = l1
-               l1 = l1.next
-           result = head
-           while l1 and l2:
-               if l1.val>l2.val:
-                   head.next = l2
-                   l2 = l2.next
-                   head = head.next
-               else:
-                   head.next = l1
-                   l1 = l1.next
-                   head = head.next
-           if l1:head.next = l1
-           if l2:head.next = l2
-           return result
    ```
 
    > Code_Java
@@ -734,26 +663,6 @@
    ```
 
    Return false
-
-   > Code_Python
-
-   ```python
-   class Solution:
-       def is_same(self,s,t):
-           if not s and not t:return True
-           if not s or not t:return False
-           if s.val != t.val:return False
-           return self.is_same(s.left,t.left) and self.is_same(s.right,t.right)
-       def isSubtree(self, s, t):
-           """
-           :type s: TreeNode
-           :type t: TreeNode
-           :rtype: bool
-           """
-           if not s:return False
-           if self.is_same(s,t):return True
-           return self.isSubtree(s.left,t) or self.isSubtree(s.right,t)
-   ```
 
    > Code_Java
 
