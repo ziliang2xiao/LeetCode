@@ -581,33 +581,46 @@
     *     ListNode(int x) { val = x; }
     * }
     */
-   class Solution {
+    
+    class Solution1 {
+       // a recursive solution
        public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
-           if(l1==null){return l2;}
-           if(l2==null){return l1;}
-           ListNode mergeNode = null;
-           if(l1.val>l2.val){
-               mergeNode = l2;
-               l2 = l2.next;
-           }else{
-               mergeNode = l1;
-               l1 = l1.next;
+           if (l1 == null) return l2;
+           if (l2 == null) return l1;
+
+           if (l1.val > l2.val) {
+               l2.next = mergeTwoLists(l1, l2.next);
+               return l2;
+           } else {
+               l1.next = mergeTwoLists(l2, l1.next);
+               return l1;
            }
-           ListNode result = mergeNode;
-           while(l1 != null && l2 != null){
-               if (l1.val > l2.val){
-                   mergeNode.next = l2;
-                   l2 = l2.next;
-                   mergeNode = mergeNode.next;
-               }else{
-                   mergeNode.next = l1;
+       }
+   }
+   
+   class Solution2 {
+       // a non-recursive solution
+       public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+           if (l1 == null) return l2;
+           if (l2 == null) return l1;
+
+           ListNode head = new ListNode(-1), ptr = head;
+
+           while (l1 != null && l2 != null) {
+               if (l1.val <= l2.val) {
+                   ptr.next = l1;
                    l1 = l1.next;
-                   mergeNode = mergeNode.next;
+               } else {
+                   ptr.next = l2;
+                   l2 = l2.next;
                }
+
+               ptr = ptr.next;
            }
-           if(l1!=null){mergeNode.next = l1;}
-           if(l2!=null){mergeNode.next = l2;}
-           return result;
+
+           ptr.next = (l1 == null) ? l2 : l1;
+
+           return head.next;
        }
    }
    ```
