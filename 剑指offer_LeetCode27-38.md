@@ -669,34 +669,88 @@
     */
    public class Solution {
        public RandomListNode copyRandomList(RandomListNode head) {
-           if (head == null){
-               return null;
+           cloneNodes(head);
+           connectSiblings(head);
+           return separateList(head);
+       }
+
+       private void cloneNodes(RandomListNode head) {
+           // First round: make copy of each node,
+           // and link them together side-by-side in a single list.
+           RandomListNode iter = head, next;
+
+           while (iter != null) {
+               next = iter.next;
+
+               RandomListNode copy = new RandomListNode(iter.label);
+               iter.next = copy;
+               copy.next = next;
+
+               iter = next;
            }
-           Map<RandomListNode,RandomListNode> cloneMap = new HashMap<>();
-           RandomListNode cloneNode = head;
-           while(cloneNode!=null){
-               cloneMap.put(cloneNode,new RandomListNode(cloneNode.label));
-               cloneNode = cloneNode.next;
-               
-           }
-           cloneNode = head;
-           while(cloneNode!=null){
-               if(cloneNode.next!=null){
-                   cloneMap.get(cloneNode).next = cloneMap.get(cloneNode.next);
-               }else{
-                   cloneMap.get(cloneNode).next = null;
+       }
+
+       private void connectSiblings(RandomListNode head) {
+           // Second round: assign random pointers for the copy nodes.
+           RandomListNode iter = head;
+
+           while (iter != null) {
+               if (iter.random != null) {
+                   iter.next.random = iter.random.next;
                }
-               if(cloneNode.random!=null){
-                   cloneMap.get(cloneNode).random = cloneMap.get(cloneNode.random);
-               }else{
-                   cloneMap.get(cloneNode).random = null;
-               }
-               cloneNode = cloneNode.next;
-               
+               iter = iter.next.next; 
            }
-           return cloneMap.get(head);
+       }
+
+       // Third round: restore the original list, and extract the copy list.
+       private RandomListNode separateList(RandomListNode head) {
+           RandomListNode iter = head, next;
+           RandomListNode dummyHead = new RandomListNode(-1);
+           RandomListNode copy, copyIter = dummyHead;
+
+           while (iter != null) {
+               next = iter.next.next;
+
+               // extract the copy
+               copy = iter.next;
+               copyIter.next = copy;
+               copyIter = copy;
+
+               // restore the original list
+               iter.next = next;
+
+               iter = next;
+           }
+
+           return dummyHead.next;
        }
    }
+   // ref: https://leetcode.com/problems/copy-list-with-random-pointer/discuss/43491/A-solution-with-constant-space-complexity-O(1)-and-linear-time-complexity-O(N) 
+   
+   
+      // hashmap: https://leetcode.com/problems/copy-list-with-random-pointer/discuss/43488/Java-O(n)-solution 
+      public RandomListNode copyRandomList(RandomListNode head) {
+        if (head == null) return null;
+
+        Map<RandomListNode, RandomListNode> map = new HashMap<RandomListNode, RandomListNode>();
+
+        // loop 1. copy all the nodes
+        RandomListNode node = head;
+        while (node != null) {
+          map.put(node, new RandomListNode(node.label));
+          node = node.next;
+        }
+
+        // loop 2. assign next and random pointers
+        node = head;
+        while (node != null) {
+          map.get(node).next = map.get(node.next);
+          map.get(node).random = map.get(node.random);
+          node = node.next;
+        }
+
+        return map.get(head);
+      }
    ```
 
 > 面试题36：二叉搜索树与双向链表
