@@ -755,7 +755,7 @@
 
 > 面试题36：二叉搜索树与双向链表
 
-1. LeetCode**无
+1. [Convert Binary Search Tree to Sorted Doubly Linked List](https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/)(426)
 
    > Description
 
@@ -777,28 +777,36 @@
    
    }
    */
-   public class Solution {
-       TreeNode head = null;
-       TreeNode realHead = null;
-       public TreeNode Convert(TreeNode pRootOfTree) {
-           ConvertSub(pRootOfTree);
-           return realHead;
-       }
-        
-       private void ConvertSub(TreeNode pRootOfTree) {
-           if(pRootOfTree==null) return;
-           ConvertSub(pRootOfTree.left);
-           if (head == null) {
-               head = pRootOfTree;
-               realHead = pRootOfTree;
-           } else {
-               head.right = pRootOfTree;
-               pRootOfTree.left = head;
-               head = pRootOfTree;
-           }
-           ConvertSub(pRootOfTree.right);
-       }
+   class Solution {
+       Node prev;
+       public Node treeToDoublyList(Node root) {
+           if (root == null) return null;
+           Node dummy = new Node(-1, null, null);
+           prev = dummy;
+
+           helper(root);
+
+           // connect head and tail
+           prev.right = dummy.right;
+           dummy.right.left = prev;
+
+           return dummy.right;
+       }
+
+       private void helper(Node cur) {
+           if (cur == null) return;
+
+           helper(cur.left);
+
+           prev.right = cur;
+           cur.left = prev;
+           prev = cur;
+
+           helper(cur.right);
+       }
    }
+   
+   // devide and conquer: https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/discuss/154659/Divide-and-Conquer-without-Dummy-Node-Java-Solution
    ```
 
 > 面试题37：序列化二叉树
@@ -837,7 +845,7 @@
 
 > 面试题38：字符串的排列
 
-1. LeetCode**无
+1. [Permutations](https://leetcode.com/problems/permutations/)(46)
 
    > Description
 
@@ -848,7 +856,7 @@
    > Code_Java
 
    ```java
-   
+   // https://leetcode.com/problems/permutations/discuss/18239/A-general-approach-to-backtracking-questions-in-Java-(Subsets-Permutations-Combination-Sum-Palindrome-Partioning)
    ```
 
    
