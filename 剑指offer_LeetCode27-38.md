@@ -47,17 +47,6 @@
    #         self.left = None
    #         self.right = None
    
-   class Solution:
-       def invertTree(self, root):
-           """
-           :type root: TreeNode
-           :rtype: TreeNode
-           """
-           if not root:return None
-           left = root.left
-           root.left = self.invertTree(root.right)
-           root.right = self.invertTree(left)
-           return root
    # 非递归的做法
    class Solution:
        def invertTree(self, root):
@@ -79,7 +68,7 @@
    ```
 
    > Code_Java
-
+   
    ```java
    /**
     * Definition for a binary tree node.
@@ -102,6 +91,8 @@
        }
    }
    //非递归做法请参考python部分
+   
+   more info: https://leetcode.com/problems/invert-binary-tree/discuss/62707/Straightforward-DFS-recursive-iterative-BFS-solutions
    ```
 
 > 面试题28：对称的二叉树
@@ -135,27 +126,6 @@
 
    > Code_Python
 
-   ```python
-   # Definition for a binary tree node.
-   # class TreeNode(object):
-   #     def __init__(self, x):
-   #         self.val = x
-   #         self.left = None
-   #         self.right = None
-   
-   class Solution(object):
-       def isSymmetric(self, root):
-           def is_same(root_left,root_right):
-               if not root_left and not root_right:return True
-               if not root_left or not root_right or root_left.val!=root_right.val:return False 
-               return is_same(root_left.left,root_right.right) and is_same(root_left.right,root_right.left)
-           """
-           :type root: TreeNode
-           :rtype: bool
-           """
-           if not root:return True
-           return is_same(root.left,root.right)
-   ```
 
    > Code_Java
 
@@ -189,6 +159,8 @@
            return isSame(rootLeft.left,rootRight.right) && isSame(rootLeft.right,rootRight.left);
        }
    }
+   
+   // more info: https://leetcode.com/problems/symmetric-tree/discuss/33054/Recursive-and-non-recursive-solutions-in-Java
    ```
 
 > 面试题29：顺时针打印矩阵
@@ -219,33 +191,6 @@
      [9,10,11,12]
    ]
    Output: [1,2,3,4,8,12,11,10,9,5,6,7] 
-   ```
-
-   > Code_Python
-
-   ```python
-   class Solution:
-       def spiralOrder(self, matrix):
-           """
-           :type matrix: List[List[int]]
-           :rtype: List[int]
-           """
-           result = []
-           if not matrix or not matrix[0]:return result
-           left, right, top, bottom = 0,len(matrix[0])-1,0,len(matrix)-1
-           while left<=right and top<=bottom:
-               for i in range(left,right+1):
-                   result.append(matrix[top][i])
-               for j in range(top+1,bottom):
-                   result.append(matrix[j][right])
-               for n in reversed(range(left,right+1)):
-                   if top < bottom:
-                       result.append(matrix[bottom][n])
-               for m in reversed(range(top+1,bottom)):
-                   if left<right:
-                       result.append(matrix[m][left])
-               left,right,top,bottom = left+1,right-1,top+1,bottom-1
-           return result
    ```
 
    > Code_Java
@@ -281,6 +226,8 @@
            return res;
        }
    }　　
+   
+   // more info https://leetcode.com/problems/spiral-matrix/discuss/20599/Super-Simple-and-Easy-to-Understand-Solution/20830
    ```
 
 ###### 4.3举例让抽象问题具体化
@@ -309,55 +256,6 @@
    minStack.pop();
    minStack.top();      --> Returns 0.
    minStack.getMin();   --> Returns -2.
-   ```
-
-   > Code_Python
-
-   ```python
-   class MinStack:
-   
-       def __init__(self):
-           """
-           initialize your data structure here.
-           """
-           self._min_stack = []
-           self._patch_min_stack = []
-   
-       def push(self, x):
-           """
-           :type x: int
-           :rtype: void
-           """
-           self._min_stack.append(x)
-           self._patch_min_stack.append(x) if ( not len(self._patch_min_stack) or self._patch_min_stack[-1] > x) else self._patch_min_stack.append(self._patch_min_stack[-1])
-   
-       def pop(self):
-           """
-           :rtype: void
-           """
-           self._patch_min_stack.pop()
-           return self._min_stack.pop()
-   
-       def top(self):
-           """
-           :rtype: int
-           """
-           return self._min_stack[-1]
-   
-       def getMin(self):
-           """
-           :rtype: int
-           """
-           return self._patch_min_stack[-1] if len(self._patch_min_stack) else None
-           
-   
-   
-   # Your MinStack object will be instantiated and called as such:
-   # obj = MinStack()
-   # obj.push(x)
-   # obj.pop()
-   # param_3 = obj.top()
-   # param_4 = obj.getMin()
    ```
 
    > Code_Java
@@ -398,6 +296,8 @@
        }
    }
    
+   // one-stack solution: https://leetcode.com/problems/min-stack/discuss/49031/Share-my-Java-solution-with-ONLY-ONE-stack 
+   
    /**
     * Your MinStack object will be instantiated and called as such:
     * MinStack obj = new MinStack();
@@ -410,34 +310,11 @@
 
 > 面试题31：栈的压入、弹出序列
 
-1. LeetCode**无
+1. [Validate Stack Sequences](https://leetcode.com/problems/validate-stack-sequences/) (946)
 
    > Description
 
    输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如序列1,2,3,4,5是某栈的压入顺序，序列4，5,3,2,1是该压栈序列对应的一个弹出序列，但4,3,5,1,2就不可能是该压栈序列的弹出序列。
-
-   > Code_Python
-
-   ```python
-   class Solution:
-       def IsPopOrder(self, pushV, popV):
-           # write code here
-           stack = []
-           if not pushV and popV:return True
-           patch_stack = [x for x in reversed(pushV)]
-           print(patch_stack)
-           for pop_a in popV:
-               if stack and pop_a == stack[-1]:
-                   stack.pop()
-               else:
-                   if pop_a not in patch_stack:return False
-                   else:
-                       while True:
-                           temp = patch_stack.pop()
-                           if temp == pop_a: break
-                           stack.append(temp)
-           return not stack
-   ```
 
    > Code_Java
 
@@ -472,26 +349,6 @@
    > Description
 
    从上往下打印出二叉树的每个节点，同层节点从左至右打印。 
-
-   > Code_Python
-
-   ```python
-   class Solution:
-       def PrintFromTopToBottom(self,root):
-           result = []
-           if not root:return result
-           temp_nodes = []
-           temp_nodes.append(root)
-           while temp_nodes:
-               current_root = temp_nodes.pop(0)
-           	result.append(current_root.val)
-           	if current_root.left:
-                   temp_nodes.append(root.left)
-               if current_root.right:
-                   temp_nodes.append(root.right)
-            return result
-               
-   ```
 
    > Code_Java
 
@@ -535,31 +392,6 @@
 
    输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。如果是则输出Yes,否则输出No。假设输入的数组的任意两个数字都互不相同。 
 
-   > Code_Python
-
-   ```python
-   # -*- coding:utf-8 -*-
-   class Solution:
-       def VerifySquenceOfBST(self, sequence):
-           if not sequence or not len(sequence):return False
-           root = sequence[-1]
-           # 二叉搜索树中左子树节点的值小于根节点的值
-           i = 0
-           for i in range(len(sequence)):
-               if sequence[i]>root:break
-           # 二叉搜索树中右子树节点的值如果小于根节点的值，则返回false
-           for s in sequence[i:-1]:
-               if s<root:return False
-           # 判断左子树是不是二叉树
-           left_flag = True
-           if i:
-               left_flag = self.VerifySquenceOfBST(sequence[:i])
-           # 判断右子树是不是二叉树
-           right_flag = True
-           if i<len(sequence)-1:
-               right_flag = self.VerifySquenceOfBST(sequence[i:-1])
-           return left_flag and right_flag
-   ```
 
    > Code_Java
 
@@ -618,27 +450,6 @@
 
    return true, as there exist a root-to-leaf path `5->4->11->2` which sum is 22.
 
-   > Code_Python
-
-   ```python
-   # Definition for a binary tree node.
-   # class TreeNode:
-   #     def __init__(self, x):
-   #         self.val = x
-   #         self.left = None
-   #         self.right = None
-   
-   class Solution:
-       def hasPathSum(self, root, sum):
-           """
-           :type root: TreeNode
-           :type sum: int
-           :rtype: bool
-           """
-           if not root:return False
-           if not root.left and not root.right and root.val == sum :return True
-           return self.hasPathSum(root.left,sum-root.val) or self.hasPathSum(root.right,sum-root.val)
-   ```
 
    > Code_Java
 
@@ -695,32 +506,6 @@
    > Code_Python
 
    ```python
-   # Definition for a binary tree node.
-   # class TreeNode:
-   #     def __init__(self, x):
-   #         self.val = x
-   #         self.left = None
-   #         self.right = None
-   
-   class Solution:
-       def pathSum(self, root, sum):
-           """
-           :type root: TreeNode
-           :type sum: int
-           :rtype: List[List[int]]
-           """
-           def helper(root_temp, sum_temp ,list_temp):
-               if not root_temp.left and not root_temp.right and root_temp.val==sum_temp:
-                   result_lists.append(list_temp)
-               if root_temp.left:
-                   helper(root_temp.left,sum_temp-root_temp.val,list_temp+[root_temp.left.val]) 
-               if root_temp.right:
-                   helper(root_temp.right,sum_temp-root_temp.val,list_temp+[root_temp.right.val]) 
-           if not root:return []
-           result_lists = []
-           helper(root,sum,[root.val])
-           return result_lists
-       
    #非递归
    
    # Definition for a binary tree node.
@@ -821,34 +606,6 @@
    3. -3 -> 11
    ```
 
-   > Code_Python
-
-   ```python
-   # Definition for a binary tree node.
-   # class TreeNode:
-   #     def __init__(self, x):
-   #         self.val = x
-   #         self.left = None
-   #         self.right = None
-   
-   class Solution:
-       def pathSum(self, root, sum):
-           """
-           :type root: TreeNode
-           :type sum: int
-           :rtype: int
-           """
-           def helper(root,sum):
-               res = 0
-               if not root:return res
-               if sum==root.val:res+=1
-               res+=helper(root.left,sum-root.val)
-               res+=helper(root.right,sum-root.val)
-               return res
-           if not root:return 0
-           return helper(root,sum)+self.pathSum(root.left,sum)+self.pathSum(root.right,sum)
-   ```
-
    > Code_Java
 
    ```java
@@ -883,6 +640,8 @@
            
        }
    }
+   
+   // O(n) solution: https://leetcode.com/problems/path-sum-iii/discuss/91878/17-ms-O(n)-java-Prefix-sum-method 
    ```
 
 ###### 4.4 分解让复杂问题简单化
@@ -896,35 +655,6 @@
    A linked list is given such that each node contains an additional random pointer which could point to any node in the list or null.
 
    Return a deep copy of the list.
-
-   > Code_Python
-
-   ```python
-   # Definition for singly-linked list with a random pointer.
-   # class RandomListNode(object):
-   #     def __init__(self, x):
-   #         self.label = x
-   #         self.next = None
-   #         self.random = None
-   
-   class Solution(object):
-       def copyRandomList(self, head):
-           """
-           :type head: RandomListNode
-           :rtype: RandomListNode
-           """
-           clone_dict = {}
-           clone_head = head
-           while clone_head:
-               clone_dict[clone_head]=RandomListNode(clone_head.label)
-               clone_head = clone_head.next
-           clone_head = head
-           while clone_head:
-               clone_dict[clone_head].next = clone_dict[clone_head.next] if clone_head.next else None
-               clone_dict[clone_head].random = clone_dict[clone_head.random] if clone_head.random else None
-               clone_head = clone_head.next
-           return clone_dict[head] if head else None
-   ```
 
    > Code_Java
 
@@ -976,35 +706,6 @@
    > Description
 
    输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。 
-
-   > Code_Python
-
-   ```python
-   # -*- coding:utf-8 -*-
-   # class TreeNode:
-   #     def __init__(self, x):
-   #         self.val = x
-   #         self.left = None
-   #         self.right = None
-   class Solution:
-       def Convert(self, pRootOfTree):
-           # write code here
-           def ConvertNode(pRootOfTree):
-               if not pNode:return
-               ConvertNode(pRootOfTree.left)
-               if not head:
-                   head = pRootOfTree
-                   realHead = pRootOfTree
-               else:
-                   head.right = pRootOfTree
-                   pRootOfTree.left = head
-                   head = pRootOfTree
-               ConvertSub(pRootOfTree.right)
-           head = None
-           realHead = None
-           ConvertNode(pRootOfTree)
-           return pHeadOfList
-   ```
 
    > Code_Java
 
@@ -1074,66 +775,6 @@
 
    **Note:** Do not use class member/global/static variables to store states. Your serialize and deserialize algorithms should be stateless.
 
-   > Code_Python
-
-   ```python
-   # Definition for a binary tree node.
-   # class TreeNode(object):
-   #     def __init__(self, x):
-   #         self.val = x
-   #         self.left = None
-   #         self.right = None
-   
-   class Codec:
-   
-       def serialize(self, root):
-           """Encodes a tree to a single string.
-           
-           :type root: TreeNode
-           :rtype: str
-           """
-           if not root:
-               return ''
-           def dfs(node):
-               if node:
-                   res.append(str(node.val))
-                   dfs(node.left)
-                   dfs(node.right)
-               else:
-                   res.append("#")
-           res = []
-           dfs(root)
-           return ' '.join(res)
-   
-   
-           
-   
-       def deserialize(self, data):
-           """Decodes your encoded data to tree.
-           
-           :type data: str
-           :rtype: TreeNode
-           """
-           if len(data) == 0:
-               return None
-           def dfs():
-               val = next(res)
-               if val == '#':
-                   return None
-               node = TreeNode(int(val))
-               node.left = dfs()
-               node.right = dfs()
-               return node
-           res = iter(data.split())
-           return dfs()
-   
-           
-   
-   # Your Codec object will be instantiated and called as such:
-   # codec = Codec()
-   # codec.deserialize(codec.serialize(root))
-   ```
-
    > Code_Java
 
    ```java
@@ -1150,21 +791,10 @@
 
    例如输入字符串abc，则打印由字符a,b,c所能排列出来的所有字符串：abc，abc,bac,bca,cab,cba 
 
-   > Code_Python
+   > Code_Java
 
-   ```python
-   class Solution:
-       def permutation(self,arr):
-           if not arr:return
-           res = []
-           self.helper(arr, res, '')
-           return sorted(list(set(res)))
-       def helper(self, arr, res, path):
-           if not arr:
-               res.append(path)
-           else:
-               for i in range(len(arr)):
-                   self.helper(arr[:i] + arr[i+1:], res, path + arr[i])
+   ```java
+   
    ```
 
    
