@@ -28,26 +28,6 @@
    Output: 2
    ```
 
-   > Code_Python
-
-   ```python
-   class Solution(object):
-       def majorityElement(self, nums):
-           """
-           :type nums: List[int]
-           :rtype: int
-           中位数，因为我们要找的数字出现的次数比其它所有数字出现的次数之和还要多
-           """
-           result = -1
-           times = 0
-           for n in nums:
-               if times==0:
-                   result = n
-                   times=1
-               else: times += 1 if result == n else -1
-           return result
-   ```
-
    > Code_Java
 
    ```java
@@ -76,37 +56,34 @@
 
 > 面试题40：最小的k个数
 
-1. [LeetCode**无
-
+1. 
    > Description
 
    对于一个无序数组，数组中元素为互不相同的整数，请返回其中最小的k个数，顺序与原数组中元素顺序一致。
 
    给定一个整数数组**A**及它的大小**n**，同时给定**k**，请返回其中最小的k个数。
-
-   > Code_Python
-
-   ```python
-   # -*- coding:utf-8 -*-
-   import heapq
-   class KthNumbers:
-       def findKthNumbers(self, A, n, k):
-           # write code here
-           if not A or k<=0 or k>len(A):return 
-           max_heap = []
-           for a in A:
-               max_num = -a
-               if len(max_heap)<k:
-                   heapq.heappush(max_heap,max_num)
-               else:
-                   heapq.heappushpop(max_heap,max_num)
-           return [a for a in A if (a in map(lambda x: -x, max_heap))]
-   ```
+   
+   similar to [Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/)(215)
 
    > Code_Java
 
    ```java
+   class Solution {
+       public int findKthLargest(int[] nums, int k) {
+           final PriorityQueue<Integer> pq = new PriorityQueue<>();
+
+           for (int num : nums) {
+               pq.offer(num);
+               if (pq.size() > k) {
+                   pq.poll();
+               }
+           }
+
+           return pq.peek();
+       }
+   }
    
+   // more info: https://leetcode.com/problems/kth-largest-element-in-an-array/discuss/60294/Solution-explained
    ```
 
 > 面试题41：数据流中的中位数
@@ -138,47 +115,6 @@
    findMedian() -> 2
    ```
 
-   > Code_Python
-
-   ```python
-   class MedianFinder:
-   
-       def __init__(self):
-           """
-           initialize your data structure here.
-           """
-           self.heaps = [],[]
-           self.heap_low = []
-           self.heap_big = []
-   
-       def addNum(self, num):
-           """
-           :type num: int
-           :rtype: void
-           """
-           heap_low,heap_big = self.heaps
-           # 每次都先进入大顶堆，然后从大顶堆中出去一个小的进小顶堆
-           heapq.heappush(heap_low,-heapq.heappushpop(heap_big, -num))
-           # 如果大顶堆长度小于小顶堆，则从小顶堆出去一个到大顶堆
-           if len(heap_big) < len(heap_low):
-               heapq.heappush(heap_big,-heapq.heappop(heap_low))
-   
-   
-       def findMedian(self):
-           """
-           :rtype: float
-           """
-           heap_low,heap_big = self.heaps
-           if len(heap_big) == len(heap_low): return (-heap_big[0] + self.heap_low[0]) / 2.0
-           return -heap_big[0]
-   
-   
-   # Your MedianFinder object will be instantiated and called as such:
-   # obj = MedianFinder()
-   # obj.addNum(num)
-   # param_2 = obj.findMedian()
-   ```
-
    > Code_Java
 
    ```java
@@ -193,6 +129,8 @@
        }
        
        public void addNum(int num) {
+           // 每次都先进入大顶堆，然后从大顶堆中出去一个小的进小顶堆
+           // 如果大顶堆长度小于小顶堆，则从小顶堆出去一个到大顶堆
            max.offer(num);
            min.offer(max.poll());
            if (max.size() < min.size()){
@@ -233,29 +171,6 @@
    **Follow up:**
 
    If you have figured out the O(*n*) solution, try coding another solution using the divide and conquer approach, which is more subtle.
-
-   > Code_Python
-
-   ```python
-   class Solution:
-       def maxSubArray(self, nums):
-           """
-           :type nums: List[int]
-           :rtype: int
-           """
-           if not nums:return 0
-           max_num = -float("inf")
-           temp_sum = 0 
-           for n in nums:
-               if temp_sum<=0:
-                   temp_sum = n
-               else:
-                   temp_sum+=n
-               if temp_sum>max_num:
-                   max_num = temp_sum
-               
-           return max_num
-   ```
 
    > Code_Java
 
@@ -301,33 +216,6 @@
    Output: 6 
    Explanation: Digit 1 occurred in the following numbers: 1, 10, 11, 12, 13.
    ```
-
-   > Code_Python
-
-   ```python
-   class Solution:
-       def countDigitOne(self, n):
-           """
-           :type n: int
-           :rtype: int
-           """
-           # 534 = （个位1出现次数）+（十位1出现次数）+（百位1出现次数）=（53*1+1）+（5*10+10）+（0*100+100）= 214
-           if not n:return 0
-           count = 0
-           base =1
-           round = n
-           while round>0:
-               weight = round%10
-               round=int(round/10)
-               count+=round*base
-               if weight==1:
-                   count+=(n%base)+1
-               elif weight>1:
-                   count+=base
-               base*=10
-           return count
-   ```
-
    > Code_Java
 
    ```java
