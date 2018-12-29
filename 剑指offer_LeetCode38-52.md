@@ -276,25 +276,6 @@
    The 11th digit of the sequence 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ... is a 0, which is part of the number 10.
    ```
 
-   > Code_Python
-
-   ```python
-   class Solution(object):
-       def findNthDigit(self, n):
-           """
-           :type n: int
-           :rtype: int
-           """
-           base ,digit,temp= 9,1,1
-           while n>base*digit:
-               n -= base*digit
-               digit+=1
-               temp +=base
-               base*=10
-           # n-1保证了上一个数字
-           return int(str(temp+(n-1)//digit)[(n-1)%digit])
-   ```
-
    > Code_Java
 
    ```java
@@ -309,6 +290,7 @@
                time += 1;
                base *= 10;
            }
+           // n-1保证了上一个数字
            return ((temp + (n - 1) / time) + "").charAt((n - 1) % time) - '0';
        }
    }
@@ -335,23 +317,6 @@
    ```
 
    **Note:** The result may be very large, so you need to return a string instead of an integer.
-
-   > Code_Python
-
-   ```python
-   import functools
-   //替换python2中得cmp
-   class Solution:
-       def largestNumber(self, nums):
-           """
-           :type nums: List[int]
-           :rtype: str
-           """
-           comp = lambda a,b:1 if a+b>b+a else -1
-           num_to_str = list(map(str,nums))
-           num_to_str.sort(key=functools.cmp_to_key(comp),reverse = True)
-           return '0' if num_to_str[0] == '0' else ''.join(num_to_str)
-   ```
 
    > Code_Java
 
@@ -390,25 +355,6 @@
 1. LeetCode**无
 
    给定一个数字，按照如下规则翻译成字符串：0翻译成“a”，1翻译成“b”…25翻译成“z”。一个数字有多种翻译可能，例如12258一共有5种，分别是bccfi，bwfi，bczi，mcfi，mzi。实现一个函数，用来计算一个数字有多少种不同的翻译方法。 
-
-   > Code_Python
-
-   ```python
-   def numDecodings(s):
-       if not s: return 0
-       dp = [0]*(len(s)+1)
-       dp[0] = 1
-       dp[1] = 1 if s[0] != '0' else 0
-       for i in range(2, len(s) + 1):
-           first = s[i - 1]
-           secode =  str(s[i - 2])+str(first)
-           print(secode)
-           if int(first) >= 1 and int(first) <= 9:
-               dp[i] += dp[i - 1]
-           if int(secode) >= 10 and int(secode) <= 26:
-               dp[i] += dp[i - 2]
-       return dp
-   ```
 
    > Code_Java
 
