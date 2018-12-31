@@ -484,20 +484,6 @@
 
    Given `"pwwkew"`, the answer is `"wke"`, with the length of 3. Note that the answer must be a **substring**, `"pwke"` is a *subsequence* and not a substring.
 
-   > Code_Python
-
-   ```python
-   class Solution(object):
-       def lengthOfLongestSubstring(self,s):
-           #存放下标的字典,存放结果的result以及指向重复开头的指针
-           s_dict,result,j = {},0,0
-           for i,ch in enumerate(s):
-               if ch in s_dict.keys() and s_dict[ch]>=j:
-                   j = s_dict[ch]+1
-               s_dict[ch],result=i,max(result,i-j+1)
-   	return result            
-   ```
-
    > Code_Java
 
    ```java
@@ -693,28 +679,6 @@
    ```
 
    **Note:** You may assume the string contain only lowercase letters.
-
-   > Code_Python
-
-   ```python
-   class Solution:
-       def firstUniqChar(self, s):
-           """
-           :type s: str
-           :rtype: int
-           """
-           # 一个字典，遍历两次
-           if not s:return -1
-           s_dict = {}
-           for char in s:
-               if char in s_dict:
-                   s_dict[char] = s_dict[char]+1
-               else:
-                   s_dict[char] = 1
-           for i,char in enumerate(s):
-               if s_dict[char] == 1:return i
-           return -1
-   ```
 
    > Code_Java
 
@@ -1034,6 +998,12 @@
                         return node.val
                    root = node.right  
    ```
+   
+   ```java
+   // high-quality Java answers
+   // https://leetcode.com/problems/validate-binary-search-tree/discuss/32112/Learn-one-iterative-inorder-traversal-apply-it-to-multiple-tree-questions-(Java-Solution)
+   // https://leetcode.com/problems/kth-smallest-element-in-a-bst/discuss/63660/3-ways-implemented-in-JAVA-(Python)%3A-Binary-Search-in-order-iterative-and-recursive
+   ```
 
 > 面试题55：二叉树的深度
 
@@ -1060,29 +1030,6 @@
    ```
 
    return its depth = 3.
-
-   > Code_Python
-
-   ```python
-   # Definition for a binary tree node.
-   # class TreeNode:
-   #     def __init__(self, x):
-   #         self.val = x
-   #         self.left = None
-   #         self.right = None
-   
-   class Solution:
-       def maxDepth(self, root):
-           """
-           :type root: TreeNode
-           :rtype: int
-           """
-           if not root:
-               return 0
-           left = self.maxDepth(root.left)
-           right = self.maxDepth(root.right)
-           return left+1 if left>right else right+1
-   ```
 
    > Code_Java
 
@@ -1114,6 +1061,9 @@
           
        }
    }
+   
+   // DFS and BFS iterative solutions
+   // https://leetcode.com/problems/maximum-depth-of-binary-tree/discuss/34195/Two-Java-Iterative-solution-DFS-and-BFS
    ```
 
    
